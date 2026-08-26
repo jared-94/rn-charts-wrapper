@@ -1,0 +1,64 @@
+buildscript {
+  ext.RnChartsWrapper = [
+    kotlinVersion: "2.2.0",
+    minSdkVersion: 26,
+    compileSdkVersion: 37,
+    targetSdkVersion: 36,
+  ]
+
+  ext.getExtOrDefault = { prop ->
+    if (rootProject.ext.has(prop)) {
+      return rootProject.ext.get(prop)
+    }
+    return RnChartsWrapper[prop]
+  }
+
+  repositories {
+    google()
+    mavenCentral()
+  }
+
+  dependencies {
+    classpath "com.android.tools.build:gradle:8.7.2"
+  }
+}
+
+apply plugin: "com.android.library"
+apply plugin: "com.facebook.react"
+
+repositories {
+  google()
+  mavenCentral()
+  // MPAndroidChart is only published on JitPack, not Maven Central. The host
+  // app already declares this repo in its own root build.gradle's
+  // `allprojects` block, but this is declared here too so the module resolves
+  // correctly when built/tested standalone.
+  maven { url 'https://www.jitpack.io' }
+}
+
+android {
+  namespace "com.rnchartswrapper"
+
+  compileSdkVersion getExtOrDefault("compileSdkVersion")
+
+  defaultConfig {
+    minSdkVersion getExtOrDefault("minSdkVersion")
+    targetSdkVersion getExtOrDefault("targetSdkVersion")
+  }
+
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_17
+    targetCompatibility JavaVersion.VERSION_17
+  }
+
+  lintOptions {
+    abortOnError false
+  }
+}
+
+dependencies {
+  implementation "com.facebook.react:react-android"
+  // Pure-JVM (no native .so), so no 16KB page-size alignment concern like
+  // react-native-openwakeword's TFLite AAR (see JeedomConnect-App/CLAUDE.md).
+  implementation "com.github.PhilJay:MPAndroidChart:v3.1.0"
+}

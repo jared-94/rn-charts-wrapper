@@ -1,0 +1,47 @@
+{
+  "name": "rn-charts-wrapper",
+  "version": "1.0.0",
+  "description": "New-architecture (Fabric) rewrite of react-native-charts-wrapper for bare React Native projects — Line/Bar/Combined charts on MPAndroidChart (Android) and DGCharts (iOS)",
+  "main": "src/index.tsx",
+  "types": "src/index.tsx",
+  "files": [
+    "android",
+    "ios",
+    "src",
+    "*.podspec"
+  ],
+  "codegenConfig": {
+    "name": "rnchartswrapper",
+    "type": "components",
+    "jsSrcsDir": "src",
+    "android": {
+      "javaPackageName": "com.rnchartswrapper"
+    },
+    "ios": {
+      "componentProvider": {
+        "RnChartsWrapperView": "RnChartsWrapperView"
+      }
+    }
+  },
+  "keywords": [
+    "react-native",
+    "charts",
+    "chart",
+    "graph",
+    "mpandroidchart",
+    "dgcharts",
+    "fabric"
+  ],
+  "license": "MIT",
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
+  "devDependencies": {
+    "@react-native/typescript-config": "0.87.0",
+    "@types/react": "^19.2.0",
+    "react": "19.2.3",
+    "react-native": "0.87.0",
+    "typescript": "^6.0.3"
+  }
+}
