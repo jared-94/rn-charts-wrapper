@@ -1,5 +1,5 @@
 import React from 'react';
-import type { NativeSyntheticEvent, StyleProp, ViewStyle } from 'react-native';
+import type { NativeSyntheticEvent, ProcessedColorValue, StyleProp, ViewStyle } from 'react-native';
 
 import NativeRnChartsWrapperView, { Commands } from './RnChartsWrapperNativeComponent';
 import type { ChartChangeEvent, ChartSelectEvent } from './RnChartsWrapperNativeComponent';
@@ -14,6 +14,16 @@ export type { ChartChangeEvent, ChartSelectEvent };
 export type InterpolationMode = 'LINEAR' | 'STEPPED' | 'CUBIC_BEZIER' | 'HORIZONTAL_BEZIER';
 export type AxisDependency = 'LEFT' | 'RIGHT';
 
+/**
+ * Output of React Native's own `processColor()` — which is how every color
+ * value reaches this library. `processColor()` itself is typed to return
+ * `null` for an invalid/unresolvable color, so every color field here
+ * accepts that too rather than requiring a bare `number`. A `null`/`undefined`
+ * color field is simply treated as "not set" natively (falls back to the
+ * underlying chart engine's own default for that field).
+ */
+export type ProcessedColor = ProcessedColorValue | null | undefined;
+
 export interface ChartValue {
     x: number;
     y: number;
@@ -23,7 +33,7 @@ export interface ChartValue {
 
 export interface FillGradientConfig {
     /** Two ARGB ints (processColor(...) output), start and end of the gradient. */
-    colors: [number, number];
+    colors: [ProcessedColor, ProcessedColor];
     positions: [number, number];
     angle?: number;
     orientation?: 'TOP_BOTTOM' | 'BOTTOM_TOP' | 'LEFT_RIGHT' | 'RIGHT_LEFT';
@@ -31,16 +41,15 @@ export interface FillGradientConfig {
 
 export interface DataSetConfig {
     mode?: InterpolationMode;
-    /** processColor(...) output. */
-    color?: number;
-    highlightColor?: number;
+    color?: ProcessedColor;
+    highlightColor?: ProcessedColor;
     highlightLineWidth?: number;
     highlightEnabled?: boolean;
     lineWidth?: number;
     drawFilled?: boolean;
     drawValues?: boolean;
     drawCircles?: boolean;
-    circleColor?: number;
+    circleColor?: ProcessedColor;
     circleRadius?: number;
     drawCircleHole?: boolean;
     fillGradient?: FillGradientConfig;
@@ -76,7 +85,7 @@ export interface CombinedChartData {
 
 export interface LegendConfig {
     enabled?: boolean;
-    textColor?: number;
+    textColor?: ProcessedColor;
     form?: 'CIRCLE' | 'SQUARE' | 'LINE' | 'NONE';
     formSize?: number;
     drawInside?: boolean;
@@ -86,8 +95,8 @@ export interface LegendConfig {
 
 export interface MarkerConfig {
     enabled?: boolean;
-    markerColor?: number;
-    textColor?: number;
+    markerColor?: ProcessedColor;
+    textColor?: ProcessedColor;
     textAlign?: 'left' | 'center' | 'right';
 }
 
@@ -102,7 +111,7 @@ export interface XAxisConfig {
     position?: 'TOP' | 'BOTTOM' | 'BOTH_SIDED' | 'TOP_INSIDE' | 'BOTTOM_INSIDE';
     drawGridLines?: boolean;
     drawLabels?: boolean;
-    textColor?: number;
+    textColor?: ProcessedColor;
     textSize?: number;
     valueFormatter?: 'date' | 'largeValue' | 'percent' | 'normal';
     since?: number;
@@ -118,7 +127,7 @@ export interface YAxisSideConfig {
     enabled?: boolean;
     drawGridLines?: boolean;
     drawLabels?: boolean;
-    textColor?: number;
+    textColor?: ProcessedColor;
     axisMinimum?: number;
     axisMaximum?: number;
     labelCount?: number;
