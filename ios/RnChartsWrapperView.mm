@@ -142,14 +142,14 @@ static id RCWConvertFollyDynamicToId(const folly::dynamic &dyn)
     [self recreateChart];
   }
 
-  // TODO: Android's counterpart calls requestDisallowInterceptTouchEvent
-  // from onInterceptTouchEvent so pinch/pan on the chart isn't stolen by an
-  // ancestor scroll view when a consumer passes disallowInterceptTouch={true}.
-  // No iOS equivalent wired up yet — UIScrollView touch-cancellation is a
-  // different mechanism (touchesShouldCancelInView: on the ancestor, or its
-  // canCancelContentTouches/delaysContentTouches). Currently a no-op here;
-  // revisit if the on-device test shows a parent scroll view stealing the
-  // chart's zoom/pan gesture.
+  // Android's counterpart calls requestDisallowInterceptTouchEvent from
+  // onInterceptTouchEvent so pinch/pan on the chart isn't stolen by an
+  // ancestor scroll view. No iOS equivalent is wired up here — UIScrollView
+  // touch-cancellation is a different mechanism (touchesShouldCancelInView:
+  // on the ancestor, or its canCancelContentTouches/delaysContentTouches) —
+  // but on-device testing (chart nested inside a ScrollView) showed DGCharts'
+  // own pinch/pan gesture recognizers already take priority by default, so
+  // this stays a no-op unless a future layout proves otherwise.
   _disallowInterceptTouch = newViewProps.disallowInterceptTouch;
 
   if (chartKindChanged || oldViewProps.chartConfig != newViewProps.chartConfig) {

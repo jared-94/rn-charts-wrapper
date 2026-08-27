@@ -120,7 +120,7 @@ Full field-level types are in [`src/index.tsx`](src/index.tsx).
 ## Known limitations
 
 - **No Pie/Radar/Scatter/Bubble/Candlestick charts** — only Line, Bar, and Combined.
-- **`disallowInterceptTouch` is Android-only.** On iOS it's accepted but currently a no-op — pinch/pan on the chart can be stolen by an ancestor `ScrollView`. See the TODO in `ios/RnChartsWrapperView.mm`.
+- **`disallowInterceptTouch` is Android-only.** On iOS it's accepted but currently a no-op — Android needs it to stop an ancestor `ScrollView` from stealing pinch/pan, but on-device testing showed DGCharts' own gesture recognizers already take priority on iOS by default (chart nested inside a `ScrollView`, touch correctly goes to the chart), so no iOS-side workaround has been needed so far.
 - **iOS `CombinedChart` draw order**: the bar-before-line draw order is set via a DGCharts API whose exact Objective-C bridging wasn't 100% certain when written (see the `NOTE` in `ios/RnChartsWrapperView.mm`). It matches DGCharts' own default either way, so this only matters if you need a *non-default* order.
 - Config is passed as one opaque object per chart (`chartConfig` internally) rather than individually-typed Fabric props, so prop-level diffing/animation isn't granular — fine for the common "rebuild the whole config on data change" pattern this library was built around.
 
