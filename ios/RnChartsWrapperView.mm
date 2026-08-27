@@ -14,14 +14,52 @@
 #import <react/renderer/components/rnchartswrapper/EventEmitters.h>
 #import <react/renderer/components/rnchartswrapper/Props.h>
 #import <react/renderer/components/rnchartswrapper/RCTComponentViewHelpers.h>
-#import <react/utils/FollyConvert.h>
+#import <folly/dynamic.h>
 
 #import <React/RCTConversions.h>
 #import <React/RCTFabricComponentsPlugins.h>
 
-@import DGCharts;
+#import <DGCharts/DGCharts-Swift.h>
 
 using namespace facebook::react;
+
+// react/utils/FollyConvert.h (convertFollyDynamicToId) is an RN-internal
+// header not exposed on third-party pods' header search paths — this is a
+// local equivalent covering the JSON-shaped values chartConfig ever holds.
+static id RCWConvertFollyDynamicToId(const folly::dynamic &dyn)
+{
+  if (dyn.isNull()) {
+    return nil;
+  }
+  if (dyn.isBool()) {
+    return @(dyn.getBool());
+  }
+  if (dyn.isInt()) {
+    return @(dyn.getInt());
+  }
+  if (dyn.isDouble()) {
+    return @(dyn.getDouble());
+  }
+  if (dyn.isString()) {
+    return [NSString stringWithUTF8String:dyn.getString().c_str()];
+  }
+  if (dyn.isArray()) {
+    NSMutableArray *array = [NSMutableArray arrayWithCapacity:dyn.size()];
+    for (const auto &item : dyn) {
+      [array addObject:RCWConvertFollyDynamicToId(item) ?: [NSNull null]];
+    }
+    return array;
+  }
+  if (dyn.isObject()) {
+    NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithCapacity:dyn.size()];
+    for (const auto &pair : dyn.items()) {
+      NSString *key = [NSString stringWithUTF8String:pair.first.getString().c_str()];
+      dict[key] = RCWConvertFollyDynamicToId(pair.second) ?: [NSNull null];
+    }
+    return dict;
+  }
+  return nil;
+}
 
 @interface RnChartsWrapperView () <RCTRnChartsWrapperViewViewProtocol, ChartViewDelegate>
 @end
@@ -63,7 +101,7 @@ using namespace facebook::react;
     // in the class; the exact bridged ObjC array/enum spelling below is a
     // best guess (see RnChartsWrapperChartConfigApplier.h's disclaimer).
     // Drop this line entirely if it doesn't compile — DGCharts defaults to
-    // bar-then-line anyway, which is what this app needs.
+    // bar-then-line anyway, matching MPAndroidChart's default on Android.
     CombinedChartView *combined = [[CombinedChartView alloc] initWithFrame:self.bounds];
     combined.drawOrder = @[ @(CombinedChartDrawOrderBar), @(CombinedChartDrawOrderLine) ];
     _chart = combined;
@@ -106,17 +144,16 @@ using namespace facebook::react;
 
   // TODO: Android's counterpart calls requestDisallowInterceptTouchEvent
   // from onInterceptTouchEvent so pinch/pan on the chart isn't stolen by an
-  // ancestor scroll view (both historyChart.js and groupHistoryChart.js
-  // always pass disallowInterceptTouch={true}). No iOS equivalent wired up
-  // yet — UIScrollView touch-cancellation is a different mechanism
-  // (touchesShouldCancelInView: on the ancestor, or its
+  // ancestor scroll view when a consumer passes disallowInterceptTouch={true}.
+  // No iOS equivalent wired up yet — UIScrollView touch-cancellation is a
+  // different mechanism (touchesShouldCancelInView: on the ancestor, or its
   // canCancelContentTouches/delaysContentTouches). Currently a no-op here;
   // revisit if the on-device test shows a parent scroll view stealing the
   // chart's zoom/pan gesture.
   _disallowInterceptTouch = newViewProps.disallowInterceptTouch;
 
   if (chartKindChanged || oldViewProps.chartConfig != newViewProps.chartConfig) {
-    id configValue = convertFollyDynamicToId(newViewProps.chartConfig);
+    id configValue = RCWConvertFollyDynamicToId(newViewProps.chartConfig);
     NSDictionary *config = [configValue isKindOfClass:[NSDictionary class]] ? (NSDictionary *)configValue : nil;
     [RnChartsWrapperChartConfigApplier apply:_chart chartKind:_chartKind config:config marker:_marker];
   }

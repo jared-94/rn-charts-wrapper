@@ -19,10 +19,10 @@ export type ChartChangeEvent = Readonly<{
 }>;
 
 // Fired when a data point is tapped (value-selected) or the selection is
-// cleared (nothing-selected) — mirrors the old lib's `onSelect`. Consumers in
-// this app only use this as a "something happened" signal (to restart the
-// tooltip auto-clear timer), not the payload itself, but the fields mirror
-// MPAndroidChart/DGCharts' own Highlight object for parity.
+// cleared (nothing-selected) — mirrors the old lib's `onSelect`. A consumer
+// can use this purely as a "something happened" signal (e.g. to restart a
+// tooltip auto-clear timer) without reading the payload, but the fields
+// mirror MPAndroidChart/DGCharts' own Highlight object for parity.
 export type ChartSelectEvent = Readonly<{
     action: string;
     x: Double;
@@ -43,17 +43,18 @@ export interface NativeProps extends ViewProps {
     // shape of the equivalent top-level props from the original
     // react-native-charts-wrapper API. Declared as UnsafeMixed rather than
     // exhaustively typed in codegen — the config tree is deeply
-    // nested/optional, the JS side already rebuilds it wholesale on every
-    // render (see historyChart.js), and the native ChartConfigApplier on
-    // each platform is the single source of truth for the schema actually
-    // read. (UnsafeObject/Object — the module-side generic-object escape
-    // hatch — is NOT accepted for component props by this codegen version;
-    // verified by running combine-js-to-schema against this exact spec.
-    // UnsafeMixed compiles to `Dynamic` on Java — call `.asMap()` — and to
-    // `folly::dynamic` on the C++ Props struct — convert via
-    // `facebook::react::convertFollyDynamicToId()` from
-    // <react/utils/FollyConvert.h> — see RnChartsWrapperManager.java /
-    // RnChartsWrapperView.mm.)
+    // nested/optional, a consumer typically rebuilds it wholesale on every
+    // render anyway, and the native ChartConfigApplier on each platform is
+    // the single source of truth for the schema actually read.
+    // (UnsafeObject/Object — the module-side generic-object escape hatch —
+    // is NOT accepted for component props by this codegen version; verified
+    // by running combine-js-to-schema against this exact spec. UnsafeMixed
+    // compiles to `Dynamic` on Java — call `.asMap()` — and to
+    // `folly::dynamic` on the C++ Props struct. Converting that to
+    // NSDictionary on iOS needs a local folly::dynamic->id walker rather
+    // than RN's own `facebook::react::convertFollyDynamicToId()` — that
+    // header isn't exposed on third-party pods' header search paths — see
+    // RnChartsWrapperManager.java / RnChartsWrapperView.mm.)
     chartConfig?: UnsafeMixed;
 
     onChange?: DirectEventHandler<ChartChangeEvent>;

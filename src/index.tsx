@@ -8,9 +8,8 @@ export type { ChartChangeEvent, ChartSelectEvent };
 
 // --- Config shapes ---------------------------------------------------------
 // These mirror the subset of the original react-native-charts-wrapper config
-// API actually used by JeedomConnect-App (see historyChart.js,
-// groupHistoryChart.js, HistoryBackground.tsx) — not the full upstream API
-// surface (no Pie/Radar/Scatter/Bubble/Candlestick support).
+// API this library reimplements (Line/Bar/Combined charts) — not the full
+// upstream API surface (no Pie/Radar/Scatter/Bubble/Candlestick support).
 
 export type InterpolationMode = 'LINEAR' | 'STEPPED' | 'CUBIC_BEZIER' | 'HORIZONTAL_BEZIER';
 export type AxisDependency = 'LEFT' | 'RIGHT';

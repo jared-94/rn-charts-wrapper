@@ -48,7 +48,7 @@ static const CGFloat kVerticalGap = 12.0;
   return CGSizeMake(width + kPaddingH * 2, height + kPaddingV * 2);
 }
 
-#pragma mark - IMarker
+#pragma mark - ChartMarker
 
 - (CGPoint)offset
 {

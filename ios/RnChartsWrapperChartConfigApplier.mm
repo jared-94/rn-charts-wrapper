@@ -82,7 +82,7 @@ static UIColor *_Nullable RCWColor(NSDictionary *dict, NSString *key)
 
 #pragma mark - Legend / marker
 
-+ (void)applyLegend:(Legend *)legend config:(nullable NSDictionary *)cfg
++ (void)applyLegend:(ChartLegend *)legend config:(nullable NSDictionary *)cfg
 {
   if (cfg == nil) {
     legend.enabled = NO;
@@ -107,13 +107,13 @@ static UIColor *_Nullable RCWColor(NSDictionary *dict, NSString *key)
   }
   NSString *form = RCWString(cfg, @"form");
   if ([form isEqualToString:@"SQUARE"]) {
-    legend.form = LegendFormSquare;
+    legend.form = ChartLegendFormSquare;
   } else if ([form isEqualToString:@"LINE"]) {
-    legend.form = LegendFormLine;
+    legend.form = ChartLegendFormLine;
   } else if ([form isEqualToString:@"NONE"]) {
-    legend.form = LegendFormNone;
+    legend.form = ChartLegendFormNone;
   } else if (form != nil) {
-    legend.form = LegendFormCircle;
+    legend.form = ChartLegendFormCircle;
   }
 }
 
@@ -147,7 +147,7 @@ static UIColor *_Nullable RCWColor(NSDictionary *dict, NSString *key)
 
 #pragma mark - Axes
 
-+ (void)applyXAxis:(XAxis *)axis config:(nullable NSDictionary *)cfg
++ (void)applyXAxis:(ChartXAxis *)axis config:(nullable NSDictionary *)cfg
 {
   if (cfg == nil) {
     axis.enabled = NO;
@@ -204,7 +204,7 @@ static UIColor *_Nullable RCWColor(NSDictionary *dict, NSString *key)
   [self applyGridDashedLine:axis config:RCWMap(cfg, @"gridDashedLine")];
 }
 
-+ (void)applyYAxis:(YAxis *)axis config:(nullable NSDictionary *)cfg
++ (void)applyYAxis:(ChartYAxis *)axis config:(nullable NSDictionary *)cfg
 {
   if (cfg == nil) {
     axis.enabled = NO;
@@ -238,7 +238,7 @@ static UIColor *_Nullable RCWColor(NSDictionary *dict, NSString *key)
   [self applyGridDashedLine:axis config:RCWMap(cfg, @"gridDashedLine")];
 }
 
-+ (void)applyGridDashedLine:(AxisBase *)axis config:(nullable NSDictionary *)cfg
++ (void)applyGridDashedLine:(ChartAxisBase *)axis config:(nullable NSDictionary *)cfg
 {
   if (cfg == nil) {
     return;
@@ -381,13 +381,13 @@ static UIColor *_Nullable RCWColor(NSDictionary *dict, NSString *key)
 
   NSString *mode = RCWString(cfg, @"mode");
   if ([mode isEqualToString:@"STEPPED"]) {
-    dataSet.mode = LineChartDataSetModeStepped;
+    dataSet.mode = LineChartModeStepped;
   } else if ([mode isEqualToString:@"CUBIC_BEZIER"]) {
-    dataSet.mode = LineChartDataSetModeCubicBezier;
+    dataSet.mode = LineChartModeCubicBezier;
   } else if ([mode isEqualToString:@"HORIZONTAL_BEZIER"]) {
-    dataSet.mode = LineChartDataSetModeHorizontalBezier;
+    dataSet.mode = LineChartModeHorizontalBezier;
   } else if (mode != nil) {
-    dataSet.mode = LineChartDataSetModeLinear;
+    dataSet.mode = LineChartModeLinear;
   }
   UIColor *color = RCWColor(cfg, @"color");
   if (color) {
@@ -466,7 +466,7 @@ static UIColor *_Nullable RCWColor(NSDictionary *dict, NSString *key)
   }
 }
 
-+ (Fill *)buildGradientFill:(NSDictionary *)cfg
++ (ChartLinearGradientFill *)buildGradientFill:(NSDictionary *)cfg
 {
   NSArray *colorsArr = cfg[@"colors"];
   NSMutableArray *cgColors = [NSMutableArray arrayWithCapacity:colorsArr.count];
@@ -479,7 +479,7 @@ static UIColor *_Nullable RCWColor(NSDictionary *dict, NSString *key)
   CGColorSpaceRelease(colorSpace);
 
   double angle = RCWDouble(cfg, @"angle", 270);
-  Fill *fill = [[Fill alloc] initWithLinearGradient:gradient angle:angle];
+  ChartLinearGradientFill *fill = [[ChartLinearGradientFill alloc] initWithGradient:gradient angle:angle];
   CGGradientRelease(gradient);
   return fill;
 }

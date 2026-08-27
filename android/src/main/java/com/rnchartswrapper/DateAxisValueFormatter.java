@@ -10,9 +10,8 @@ import java.util.Locale;
 /**
  * Mirrors the original react-native-charts-wrapper xAxis date formatter:
  * `valueFormatter: 'date'` + `since`/`timeUnit`/`valueFormatterPattern`/`locale`.
- * Axis values are epoch offsets expressed in `timeUnit` (this app always uses
- * SECONDS, `since: 0`) — converted to millis and formatted with the given
- * pattern/locale (e.g. "FR-fr").
+ * Axis values are epoch offsets expressed in `timeUnit` — converted to
+ * millis and formatted with the given pattern/locale (e.g. "fr-FR").
  */
 class DateAxisValueFormatter extends ValueFormatter {
     private final SimpleDateFormat mFormat;

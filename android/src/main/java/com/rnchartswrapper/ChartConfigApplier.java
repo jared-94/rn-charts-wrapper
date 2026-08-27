@@ -30,9 +30,9 @@ import java.util.List;
  * Reads the single bundled `chartConfig` object (see
  * RnChartsWrapperNativeComponent.ts) and applies it to a live MPAndroidChart
  * instance. Covers exactly the subset of the original react-native-charts-
- * wrapper config surface actually used by JeedomConnect-App — see the plan /
- * index.tsx for the full field list. This is the single source of truth for
- * the config schema; there is no codegen-side typing to keep in sync.
+ * wrapper config surface this library reimplements — see index.tsx for the
+ * full field list. This is the single source of truth for the config
+ * schema; there is no codegen-side typing to keep in sync.
  */
 final class ChartConfigApplier {
 

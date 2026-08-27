@@ -59,6 +59,6 @@ android {
 dependencies {
   implementation "com.facebook.react:react-android"
   // Pure-JVM (no native .so), so no 16KB page-size alignment concern like
-  // react-native-openwakeword's TFLite AAR (see JeedomConnect-App/CLAUDE.md).
+  // libraries that ship prebuilt native .so files (e.g. TensorFlow Lite AARs).
   implementation "com.github.PhilJay:MPAndroidChart:v3.1.0"
 }

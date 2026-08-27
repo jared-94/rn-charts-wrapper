@@ -33,9 +33,9 @@
   return 1000.0; // SECONDS, default
 }
 
-#pragma mark - AxisValueFormatter
+#pragma mark - ChartAxisValueFormatter
 
-- (NSString *)stringForValue:(double)value axis:(nullable AxisBase *)axis
+- (NSString *)stringForValue:(double)value axis:(nullable ChartAxisBase *)axis
 {
   double millis = _sinceMillis + value * _unitToMillis;
   NSDate *date = [NSDate dateWithTimeIntervalSince1970:millis / 1000.0];
