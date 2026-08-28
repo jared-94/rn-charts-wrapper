@@ -8,8 +8,8 @@ import com.facebook.react.uimanager.events.Event;
 
 /**
  * Generic Fabric direct-event carrier: `name` must already be the codegen
- * "top"-prefixed internal name (e.g. "topChange" for the `onChange` prop),
- * not the JS-facing prop name.
+ * "top"-prefixed internal name (e.g. "topChartChange" for the
+ * `onChartChange` prop), not the JS-facing prop name.
  */
 class RnChartsWrapperEvent extends Event<RnChartsWrapperEvent> {
     private final String mName;

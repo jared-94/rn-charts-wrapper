@@ -35,7 +35,13 @@ class RnChartsWrapperView extends FrameLayout implements OnChartGestureListener,
     // props declared in RnChartsWrapperNativeComponent.ts — must match
     // exactly for JS to receive them (see normalizeInputEventName in
     // @react-native/codegen).
-    private static final String EVENT_ON_CHANGE = "topChange";
+    //
+    // Named onChartChange (not onChange): RN's BaseViewConfig injects a
+    // generic bubbling "onChange" (topChange) into every native view's
+    // merged view config, which collides with a custom direct event of the
+    // same name and throws "Event cannot be both direct and bubbling" on
+    // first mount. See RnChartsWrapperNativeComponent.ts.
+    private static final String EVENT_ON_CHANGE = "topChartChange";
     private static final String EVENT_ON_SELECT = "topSelect";
 
     private String mChartKind = "line";

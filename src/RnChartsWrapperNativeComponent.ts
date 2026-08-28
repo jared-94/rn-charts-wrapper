@@ -57,7 +57,14 @@ export interface NativeProps extends ViewProps {
     // RnChartsWrapperManager.java / RnChartsWrapperView.mm.)
     chartConfig?: UnsafeMixed;
 
-    onChange?: DirectEventHandler<ChartChangeEvent>;
+    // Named onChartChange (not onChange) on the native side: RN's
+    // iOS/Android BaseViewConfig injects a generic bubbling "onChange"
+    // (topChange) into every native view's merged view config. A custom
+    // direct event also named onChange collides with that on the same
+    // "topChange" key, throwing "Event cannot be both direct and bubbling"
+    // on first mount. The public onChange prop (index.tsx) is unaffected —
+    // only this internal wire name changed.
+    onChartChange?: DirectEventHandler<ChartChangeEvent>;
     onSelect?: DirectEventHandler<ChartSelectEvent>;
 }
 

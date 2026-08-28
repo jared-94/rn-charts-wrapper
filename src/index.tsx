@@ -235,7 +235,7 @@ function makeChartComponent(chartKind: 'line' | 'bar' | 'combined') {
                 chartKind={chartKind}
                 disallowInterceptTouch={!!props.disallowInterceptTouch}
                 chartConfig={chartConfig}
-                onChange={props.onChange}
+                onChartChange={props.onChange}
                 onSelect={props.onSelect}
             />
         );

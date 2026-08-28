@@ -1,7 +1,7 @@
 /**
  * Fabric component glue — mirrors RnChartsWrapperView.java's structure
  * (recreate-chart-on-chartKind-change, apply bundled chartConfig via a
- * ChartConfigApplier, forward ChartViewDelegate callbacks as onChange/
+ * ChartConfigApplier, forward ChartViewDelegate callbacks as onChartChange/
  * onSelect). See RnChartsWrapperChartConfigApplier.h for the DGCharts-
  * specific parts that are unverified against a real Xcode build.
  */
@@ -233,7 +233,7 @@ static id RCWConvertFollyDynamicToId(const folly::dynamic &dyn)
   if (!emitter) {
     return;
   }
-  emitter->onChange({.action = std::string([action UTF8String])});
+  emitter->onChartChange({.action = std::string([action UTF8String])});
 }
 
 @end
