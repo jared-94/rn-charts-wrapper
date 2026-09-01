@@ -288,7 +288,16 @@ final class ChartConfigApplier {
     }
 
     private static void applyCombinedChartData(CombinedChart chart, ReadableMap dataMap) {
+        // Always attach a (possibly empty) BarData/LineData rather than leaving
+        // one null when its key is absent. CombinedChart.setData() runs the new
+        // renderer's initBuffers() against the *previous* call's sub-renderer
+        // list (createRenderers() only refreshes it afterwards) — if a prior
+        // call had bar/line data and this one omits it, the stale
+        // Bar/LineChartRenderer NPEs on mChart.getBarData()/getLineData()
+        // returning null. An empty-but-non-null data object keeps that call a
+        // no-op instead.
         CombinedData combinedData = new CombinedData();
+
         ReadableMap barDataMap = getMap(dataMap, "barData");
         if (barDataMap != null) {
             ReadableArray dataSets = barDataMap.getArray("dataSets");
@@ -299,7 +308,10 @@ final class ChartConfigApplier {
             BarData barData = new BarData(sets);
             applyBarDataConfig(barData, getMap(barDataMap, "config"), sets.size());
             combinedData.setData(barData);
+        } else {
+            combinedData.setData(new BarData());
         }
+
         ReadableMap lineDataMap = getMap(dataMap, "lineData");
         if (lineDataMap != null) {
             ReadableArray dataSets = lineDataMap.getArray("dataSets");
@@ -308,7 +320,10 @@ final class ChartConfigApplier {
                 sets.add(buildLineDataSet(dataSets.getMap(i)));
             }
             combinedData.setData(new LineData(sets));
+        } else {
+            combinedData.setData(new LineData());
         }
+
         chart.setData(combinedData);
     }
 
