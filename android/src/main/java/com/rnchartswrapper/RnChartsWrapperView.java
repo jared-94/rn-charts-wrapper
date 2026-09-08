@@ -41,8 +41,11 @@ class RnChartsWrapperView extends FrameLayout implements OnChartGestureListener,
     // merged view config, which collides with a custom direct event of the
     // same name and throws "Event cannot be both direct and bubbling" on
     // first mount. See RnChartsWrapperNativeComponent.ts.
+    //
+    // Same reasoning for onSelect: BaseViewConfig also injects a generic
+    // bubbling "onSelect" (topSelect) into every view config.
     private static final String EVENT_ON_CHANGE = "topChartChange";
-    private static final String EVENT_ON_SELECT = "topSelect";
+    private static final String EVENT_ON_SELECT = "topChartSelect";
 
     private String mChartKind = "line";
     private boolean mDisallowInterceptTouch = false;

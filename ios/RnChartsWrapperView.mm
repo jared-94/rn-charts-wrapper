@@ -189,7 +189,7 @@ static id RCWConvertFollyDynamicToId(const folly::dynamic &dyn)
   if (!emitter) {
     return;
   }
-  emitter->onSelect({
+  emitter->onChartSelect({
       .action = std::string("select"),
       .x = entry.x,
       .y = entry.y,
@@ -206,7 +206,7 @@ static id RCWConvertFollyDynamicToId(const folly::dynamic &dyn)
   if (!emitter) {
     return;
   }
-  emitter->onSelect({
+  emitter->onChartSelect({
       .action = std::string("none"),
       .x = 0,
       .y = 0,

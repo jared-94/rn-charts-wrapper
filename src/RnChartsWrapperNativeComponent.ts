@@ -65,7 +65,13 @@ export interface NativeProps extends ViewProps {
     // on first mount. The public onChange prop (index.tsx) is unaffected —
     // only this internal wire name changed.
     onChartChange?: DirectEventHandler<ChartChangeEvent>;
-    onSelect?: DirectEventHandler<ChartSelectEvent>;
+
+    // Same collision as onChange above: RN's BaseViewConfig also injects a
+    // generic bubbling "onSelect" (topSelect) into every native view's
+    // merged view config (see BaseViewConfig.android.js), which collides
+    // with a custom direct event of the same name. The public onSelect prop
+    // (index.tsx) is unaffected — only this internal wire name changed.
+    onChartSelect?: DirectEventHandler<ChartSelectEvent>;
 }
 
 type NativeType = HostComponent<NativeProps>;
