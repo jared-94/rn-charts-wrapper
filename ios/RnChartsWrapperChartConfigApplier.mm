@@ -3,13 +3,14 @@
 
 #import <React/RCTConvert.h>
 
-// Implemented in Swift (RnChartsWrapperDateXAxisRenderer.swift). Declared by
-// hand instead of importing the generated RnChartsWrapper-Swift.h, which would
-// have to be compiled as an Objective-C++ module import from this .mm.
-@interface RnChartsWrapperDateXAxisRenderer : ChartXAxisRenderer
-@property (nonatomic) BOOL dateAxis;
-@property (nonatomic) double sinceMillis;
-@property (nonatomic) double unitToMillis;
+// RnChartsWrapperDateXAxisRenderer (a ChartXAxisRenderer subclass) is
+// implemented in Swift. Objective-C may not declare a subclass of a Swift class
+// (objc_subclassing_restricted), and importing the generated
+// RnChartsWrapper-Swift.h from this Objective-C++ file is fragile, so the
+// class is looked up by name and configured through this protocol, whose
+// selector the Swift method exports.
+@protocol RCWDateAxisRendering <NSObject>
+- (void)setDateAxis:(BOOL)dateAxis sinceMillis:(double)sinceMillis unitToMillis:(double)unitToMillis;
 @end
 
 static BOOL RCWHasKey(NSDictionary *dict, NSString *key)
@@ -218,24 +219,25 @@ static UIColor *_Nullable RCWColor(NSDictionary *dict, NSString *key)
 // DGCharts' decimal intervals — see RnChartsWrapperDateXAxisRenderer.swift.
 + (void)applyXAxisRenderer:(BarLineChartViewBase *)chart
 {
-  RnChartsWrapperDateXAxisRenderer *renderer;
-  if ([chart.xAxisRenderer isKindOfClass:[RnChartsWrapperDateXAxisRenderer class]]) {
-    renderer = (RnChartsWrapperDateXAxisRenderer *)chart.xAxisRenderer;
-  } else {
-    ChartXAxisRenderer *current = chart.xAxisRenderer;
-    renderer = [[RnChartsWrapperDateXAxisRenderer alloc] initWithViewPortHandler:current.viewPortHandler
-                                                                             axis:chart.xAxis
-                                                                      transformer:current.transformer];
+  Class rendererClass = NSClassFromString(@"RnChartsWrapperDateXAxisRenderer");
+  if (rendererClass == nil) {
+    return;
+  }
+  ChartXAxisRenderer *renderer = chart.xAxisRenderer;
+  if (![renderer isKindOfClass:rendererClass]) {
+    // Inherited ChartXAxisRenderer initializer (cast: Y axis renderers have the same selector).
+    renderer = [(ChartXAxisRenderer *)[rendererClass alloc] initWithViewPortHandler:renderer.viewPortHandler
+                                                                               axis:chart.xAxis
+                                                                        transformer:renderer.transformer];
     chart.xAxisRenderer = renderer;
   }
+  id<RCWDateAxisRendering> dateRenderer = (id<RCWDateAxisRendering>)renderer;
   id formatter = chart.xAxis.valueFormatter;
   if ([formatter isKindOfClass:[RnChartsWrapperDateAxisValueFormatter class]]) {
     RnChartsWrapperDateAxisValueFormatter *date = (RnChartsWrapperDateAxisValueFormatter *)formatter;
-    renderer.dateAxis = YES;
-    renderer.sinceMillis = date.axisSinceMillis;
-    renderer.unitToMillis = date.axisUnitToMillis;
+    [dateRenderer setDateAxis:YES sinceMillis:date.axisSinceMillis unitToMillis:date.axisUnitToMillis];
   } else {
-    renderer.dateAxis = NO;
+    [dateRenderer setDateAxis:NO sinceMillis:0 unitToMillis:1000];
   }
 }
 

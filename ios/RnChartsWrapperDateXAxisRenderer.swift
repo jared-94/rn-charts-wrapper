@@ -9,15 +9,24 @@ import Foundation
  *
  * Swift because DGCharts dispatches computeAxisValues through the Swift
  * vtable — an Objective-C override would never be called. The applier
- * (RnChartsWrapperChartConfigApplier.mm) declares this class by hand and
- * sets `dateAxis` / `sinceMillis` / `unitToMillis` from the xAxis config.
+ * (RnChartsWrapperChartConfigApplier.mm) can't declare a subclass of a Swift
+ * class (objc_subclassing_restricted): it gets this class with
+ * NSClassFromString and calls setDateAxis:sinceMillis:unitToMillis: through
+ * a protocol of its own.
  */
 @objc(RnChartsWrapperDateXAxisRenderer)
 public final class RnChartsWrapperDateXAxisRenderer: XAxisRenderer {
 
-    @objc public var dateAxis = false
-    @objc public var sinceMillis: Double = 0
-    @objc public var unitToMillis: Double = 1000
+    private var dateAxis = false
+    private var sinceMillis: Double = 0
+    private var unitToMillis: Double = 1000
+
+    @objc(setDateAxis:sinceMillis:unitToMillis:)
+    public func setDateAxis(_ dateAxis: Bool, sinceMillis: Double, unitToMillis: Double) {
+        self.dateAxis = dateAxis
+        self.sinceMillis = sinceMillis
+        self.unitToMillis = unitToMillis
+    }
 
     public override func computeAxisValues(min: Double, max: Double) {
         guard dateAxis, unitToMillis > 0, !axis.isForceLabelsEnabled, !axis.centerAxisLabelsEnabled else {
