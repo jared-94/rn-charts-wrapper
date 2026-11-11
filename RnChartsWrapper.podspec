@@ -15,7 +15,15 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://github.com/jared-94/rn-charts-wrapper.git", :tag => "v#{s.version}" }
   s.static_framework = true
 
-  s.source_files = "ios/**/*.{h,m,mm}"
+  # One Swift file: RnChartsWrapperDateXAxisRenderer.swift (DGCharts' axis
+  # renderer can only be overridden from Swift).
+  s.source_files = "ios/**/*.{h,m,mm,swift}"
+  s.swift_version = "5.0"
+  # Nothing outside the pod imports these headers (the component is looked up
+  # with NSClassFromString by codegen's RCTThirdPartyComponentsProvider).
+  # Private = kept out of the module's umbrella header, which the Swift file
+  # imports implicitly: RnChartsWrapperView.h pulls React's C++ headers.
+  s.private_header_files = "ios/**/*.h"
 
   # DGCharts is the maintained continuation of danielgindi/Charts (formerly
   # consumed here as "ios-charts" by the original react-native-charts-wrapper)

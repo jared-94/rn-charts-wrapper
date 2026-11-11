@@ -56,9 +56,25 @@ class DateAxisValueFormatter extends ValueFormatter {
         }
     }
 
+    long toMillis(double value) {
+        return mSinceMillis + Math.round(value * mUnitToMillis);
+    }
+
+    /**
+     * Axis value of a tick, never formatted as an earlier instant: axis
+     * entries are floats, and an epoch in seconds only has a 128 s float
+     * precision, so midnight could round to 23:59 of the previous day.
+     */
+    float toAxisValue(long millis) {
+        float value = (float) ((millis - mSinceMillis) / mUnitToMillis);
+        while (toMillis(value) < millis) {
+            value = Math.nextUp(value);
+        }
+        return value;
+    }
+
     @Override
     public String getAxisLabel(float value, AxisBase axis) {
-        long millis = mSinceMillis + Math.round(value * mUnitToMillis);
-        return mFormat.format(new Date(millis));
+        return mFormat.format(new Date(toMillis(value)));
     }
 }

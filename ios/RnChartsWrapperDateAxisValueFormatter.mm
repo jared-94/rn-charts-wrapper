@@ -33,6 +33,16 @@
   return 1000.0; // SECONDS, default
 }
 
+- (double)axisSinceMillis
+{
+  return _sinceMillis;
+}
+
+- (double)axisUnitToMillis
+{
+  return _unitToMillis;
+}
+
 #pragma mark - ChartAxisValueFormatter
 
 - (NSString *)stringForValue:(double)value axis:(nullable ChartAxisBase *)axis

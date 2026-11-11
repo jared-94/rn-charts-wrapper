@@ -54,6 +54,10 @@ final class ChartConfigApplier {
 
         applyLegend(chart.getLegend(), getMap(config, "legend"));
         applyXAxis(chart.getXAxis(), getMap(config, "xAxis"));
+        if (!(chart.getRendererXAxis() instanceof DateXAxisRenderer)) {
+            chart.setXAxisRenderer(new DateXAxisRenderer(chart.getViewPortHandler(), chart.getXAxis(),
+                    chart.getTransformer(YAxis.AxisDependency.LEFT)));
+        }
         ReadableMap yAxisConfig = getMap(config, "yAxis");
         applyYAxis(chart.getAxisLeft(), yAxisConfig != null ? getMap(yAxisConfig, "left") : null);
         applyYAxis(chart.getAxisRight(), yAxisConfig != null ? getMap(yAxisConfig, "right") : null);

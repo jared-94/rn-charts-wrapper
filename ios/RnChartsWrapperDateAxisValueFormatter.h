@@ -15,6 +15,10 @@ NS_ASSUME_NONNULL_BEGIN
                            since:(double)since
                         timeUnit:(nullable NSString *)timeUnit;
 
+/** Epoch millis of axis value 0, and millis per axis unit (read by RnChartsWrapperDateXAxisRenderer). */
+@property (nonatomic, readonly) double axisSinceMillis;
+@property (nonatomic, readonly) double axisUnitToMillis;
+
 @end
 
 NS_ASSUME_NONNULL_END

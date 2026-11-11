@@ -3,6 +3,15 @@
 
 #import <React/RCTConvert.h>
 
+// Implemented in Swift (RnChartsWrapperDateXAxisRenderer.swift). Declared by
+// hand instead of importing the generated RnChartsWrapper-Swift.h, which would
+// have to be compiled as an Objective-C++ module import from this .mm.
+@interface RnChartsWrapperDateXAxisRenderer : ChartXAxisRenderer
+@property (nonatomic) BOOL dateAxis;
+@property (nonatomic) double sinceMillis;
+@property (nonatomic) double unitToMillis;
+@end
+
 static BOOL RCWHasKey(NSDictionary *dict, NSString *key)
 {
   return dict != nil && dict[key] != nil && ![dict[key] isKindOfClass:[NSNull class]];
@@ -58,6 +67,7 @@ static UIColor *_Nullable RCWColor(NSDictionary *dict, NSString *key)
 
   [self applyLegend:chart.legend config:RCWMap(config, @"legend")];
   [self applyXAxis:chart.xAxis config:RCWMap(config, @"xAxis")];
+  [self applyXAxisRenderer:chart];
   NSDictionary *yAxisConfig = RCWMap(config, @"yAxis");
   [self applyYAxis:chart.leftAxis config:RCWMap(yAxisConfig, @"left")];
   [self applyYAxis:chart.rightAxis config:RCWMap(yAxisConfig, @"right")];
@@ -202,6 +212,31 @@ static UIColor *_Nullable RCWColor(NSDictionary *dict, NSString *key)
     axis.valueFormatter = nil;
   }
   [self applyGridDashedLine:axis config:RCWMap(cfg, @"gridDashedLine")];
+}
+
+// Date axes get calendar-aligned ticks (midnight, the hour...) instead of
+// DGCharts' decimal intervals — see RnChartsWrapperDateXAxisRenderer.swift.
++ (void)applyXAxisRenderer:(BarLineChartViewBase *)chart
+{
+  RnChartsWrapperDateXAxisRenderer *renderer;
+  if ([chart.xAxisRenderer isKindOfClass:[RnChartsWrapperDateXAxisRenderer class]]) {
+    renderer = (RnChartsWrapperDateXAxisRenderer *)chart.xAxisRenderer;
+  } else {
+    ChartXAxisRenderer *current = chart.xAxisRenderer;
+    renderer = [[RnChartsWrapperDateXAxisRenderer alloc] initWithViewPortHandler:current.viewPortHandler
+                                                                             axis:chart.xAxis
+                                                                      transformer:current.transformer];
+    chart.xAxisRenderer = renderer;
+  }
+  id formatter = chart.xAxis.valueFormatter;
+  if ([formatter isKindOfClass:[RnChartsWrapperDateAxisValueFormatter class]]) {
+    RnChartsWrapperDateAxisValueFormatter *date = (RnChartsWrapperDateAxisValueFormatter *)formatter;
+    renderer.dateAxis = YES;
+    renderer.sinceMillis = date.axisSinceMillis;
+    renderer.unitToMillis = date.axisUnitToMillis;
+  } else {
+    renderer.dateAxis = NO;
+  }
 }
 
 + (void)applyYAxis:(ChartYAxis *)axis config:(nullable NSDictionary *)cfg
